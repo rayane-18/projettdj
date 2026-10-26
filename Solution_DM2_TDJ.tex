@@ -1,0 +1,220 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\IfFileExists{french.ldf}{\usepackage[french]{babel}}{\usepackage[english]{babel}}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{geometry}
+\geometry{top=2cm, bottom=2cm, left=2.2cm, right=2.2cm}
+\usepackage{booktabs,array,multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usepackage[colorlinks=true,linkcolor=blue!60!black]{hyperref}
+\newtcolorbox{propbox}[1]{colback=blue!5!white,colframe=blue!75!black,fonttitle=\bfseries,title={#1},breakable,boxrule=0.8pt}
+\newtcolorbox{rembox}[1]{colback=orange!5!white,colframe=orange!80!black,fonttitle=\bfseries,title={#1},breakable,boxrule=0.8pt}
+\newtcolorbox{verifbox}{colback=green!4!white,colframe=green!45!black,fonttitle=\bfseries,title=Vérification algorithmique (Python),breakable,boxrule=0.6pt}
+\newcommand{\Xt}{\tilde{X}}
+\newcommand{\Yt}{\tilde{Y}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\title{\textbf{Université Akli Mohand Oulhadj -- Bouira}\\
+\large Master Recherche Opérationnelle (RO) -- 2025/2026\\
+\Large \textbf{Théorie des Jeux : Solution Détaillée du Devoir Maison n$^\circ$2 (DM 2)}}
+\author{\textbf{Référence de cours :} Chapitre 1 (jeux matriciels, domination)\\ Chapitre 2 (jeux non coopératifs, équilibre de Nash)}
+\date{}
+
+\begin{document}
+\maketitle
+\hrule
+\vspace{0.4cm}
+
+%=====================================================================
+\section*{Exercice 1 : Jeu à somme nulle $3\times 2$}
+
+\[
+A=\begin{pmatrix} 1/4 & -1/2\\ 1/6 & -1/2\\ 1/6 & 1/6\end{pmatrix}
+\qquad
+L_1=\Big(\tfrac14,-\tfrac12\Big),\ L_2=\Big(\tfrac16,-\tfrac12\Big),\ L_3=\Big(\tfrac16,\tfrac16\Big),\quad
+C_1=\begin{pmatrix}1/4\\1/6\\1/6\end{pmatrix},\ C_2=\begin{pmatrix}-1/2\\-1/2\\1/6\end{pmatrix}.
+\]
+Le joueur 1 (lignes) maximise, le joueur 2 (colonnes) minimise.
+
+\subsection*{1. Stratégies dominées et strictement dominées}
+
+\begin{propbox}{Rappel du cours (pages 18, 21--22)}
+\textbf{Joueur 1} : $i^*$ est dominée par $\bar i$ si $a_{i^*j}\le a_{\bar ij}$ pour tout $j$ avec au moins une inégalité stricte ; strictement dominée si toutes sont strictes. \textbf{Joueur 2} : $j^*$ est dominée par $\bar j$ si $a_{ij^*}\ge a_{i\bar j}$ pour tout $i$, avec au moins une stricte. \textbf{Extension mixte} : on compare à une combinaison convexe des autres stratégies.
+\end{propbox}
+
+\paragraph{Joueur 1.}
+\begin{itemize}
+\item $L_2$ vs $L_1$ : $\frac16<\frac14$ et $-\frac12=-\frac12$. Donc \textbf{$L_2$ est dominée par $L_1$}, au sens large seulement (égalité en colonne 2).
+\item $L_2$ vs $L_3$ : $\frac16=\frac16$ et $-\frac12<\frac16$. Donc \textbf{$L_2$ est aussi dominée par $L_3$}, au sens large (égalité en colonne 1).
+\item $L_1$ vs $L_3$ : $\frac14>\frac16$ mais $-\frac12<\frac16$ : aucune ne domine l'autre. $L_1$ et $L_3$ ne sont pas dominées.
+\item \textbf{$L_2$ est strictement dominée dans l'extension mixte.} Cherchons $\lambda\in\,]0,1[$ tel que $\lambda L_1+(1-\lambda)L_3>L_2$ :
+\[
+\begin{cases}
+\frac{\lambda}{4}+\frac{1-\lambda}{6}>\frac16 \iff \frac{\lambda}{12}>0\iff\lambda>0,\\[1mm]
+-\frac{\lambda}{2}+\frac{1-\lambda}{6}>-\frac12\iff \frac23>\frac{2\lambda}{3}\iff\lambda<1.
+\end{cases}
+\]
+Tout $\lambda\in\,]0,1[$ convient ; pour $\lambda=\frac12$ : $\frac12L_1+\frac12L_3=\big(\frac{5}{24},-\frac16\big)>\big(\frac16,-\frac12\big)=L_2$ (car $\frac5{24}>\frac4{24}$ et $-\frac16>-\frac12$).
+\end{itemize}
+
+\paragraph{Joueur 2.}
+\begin{itemize}
+\item $C_1$ vs $C_2$ : $\frac14>-\frac12$, $\frac16>-\frac12$, $\frac16=\frac16$. Donc $C_1\ge C_2$ avec deux inégalités strictes : \textbf{$C_1$ est dominée par $C_2$}, au sens large (égalité en ligne 3).
+\item Avec seulement deux colonnes, la seule « combinaison » des autres colonnes est $C_2$ elle-même : $C_1$ n'est \textbf{pas strictement dominée}, même dans l'extension mixte. $C_2$ n'est pas dominée ($-\frac12<\frac14$).
+\end{itemize}
+
+\[
+\boxed{\begin{array}{l}
+\text{Dominées (au sens large) : } L_2 \text{ (par } L_1 \text{ et par } L_3\text{) et } C_1 \text{ (par } C_2\text{).}\\
+\text{Strictement dominée : aucune en stratégies pures ; } L_2 \text{ l'est dans l'extension mixte, par } \big(\tfrac12,0,\tfrac12\big).
+\end{array}}
+\]
+
+\subsection*{2. Solution après élimination}
+On supprime $L_2$ puis $C_1$ :
+\[
+A\ \xrightarrow{\ \text{sans } L_2\ }\ \begin{pmatrix}1/4&-1/2\\1/6&1/6\end{pmatrix}\ \xrightarrow{\ \text{sans } C_1\ }\ \begin{pmatrix}-1/2\\1/6\end{pmatrix}.
+\]
+Dans ce jeu réduit, le joueur 2 n'a plus que $C_2$ ; le joueur 1 choisit le maximum, $\frac16$ (ligne $L_3$). La solution du jeu réduit est $(L_3,C_2)$ de valeur $\frac16$.
+
+\textbf{Vérification dans $J$ (point selle).} Minima des lignes : $-\frac12,-\frac12,\frac16\Rightarrow\alpha=\frac16$. Maxima des colonnes : $\frac14,\frac16\Rightarrow\beta=\frac16$. Donc $\alpha=\beta=a_{32}=\frac16$ :
+\[
+\boxed{\text{Solution en stratégies pures : } (i^*,j^*)=(3,2),\qquad v=\frac16.}
+\]
+C'est cohérent avec la proposition du cours (p.~19) : une solution du jeu réduit est une solution du jeu initial. Le point selle est unique en stratégies pures : $a_{31}=\frac16$ est minimal dans sa ligne mais pas maximal dans sa colonne ($\frac14>\frac16$).
+
+\subsection*{3. Extension mixte de $J$ (sans élimination)}
+\[
+\Xt=\{x=(x_1,x_2,x_3)\in\mathbb{R}^3: x_i\ge0,\ x_1+x_2+x_3=1\},\qquad \Yt=\{y=(y_1,y_2)\in\mathbb{R}^2: y_j\ge0,\ y_1+y_2=1\},
+\]
+\[
+E(x,y)=x^TAy=\tfrac14x_1y_1-\tfrac12x_1y_2+\tfrac16x_2y_1-\tfrac12x_2y_2+\tfrac16x_3y_1+\tfrac16x_3y_2,
+\]
+et $\tilde J=\langle I=\{1,2\},\Xt,\Yt,E\rangle$ : le joueur 1 maximise $E$, le joueur 2 la minimise.
+
+\subsection*{4. Relation entre $(x,y)$ et $v$}
+D'après le \textbf{Théorème 2} du cours (p.~11), $(x,y)\in\Xt\times\Yt$ est solution de valeur $v$ si et seulement si
+\[
+\begin{cases}
+\sum_{i=1}^3 a_{ij}x_i\ge v,\ j=1,2 & \text{i.e. } \frac14x_1+\frac16x_2+\frac16x_3\ge v,\quad -\frac12x_1-\frac12x_2+\frac16x_3\ge v,\\[1mm]
+\sum_{j=1}^2 a_{ij}y_j\le v,\ i=1,2,3 & \text{i.e. } \frac14y_1-\frac12y_2\le v,\quad \frac16y_1-\frac12y_2\le v,\quad \frac16y_1+\frac16y_2\le v,\\[1mm]
+x_i\ge0,\ y_j\ge0,\ \sum x_i=\sum y_j=1.
+\end{cases}
+\]
+De façon équivalente (point selle) : $E(x',y)\le E(x,y)=v\le E(x,y')$ pour tous $x'\in\Xt$, $y'\in\Yt$.
+
+\subsection*{5. Calcul de $(x,y)$ et $v$}
+Une stratégie pure étant une stratégie mixte, la question 2 fournit déjà une solution : $x=(0,0,1)$, $y=(0,1)$, $v=\frac16$. Vérifions avec le Théorème 2 : $x^TA=(\frac16,\frac16)\ge\frac16$ et $Ay=(-\frac12,-\frac12,\frac16)^T\le\frac16$. \checkmark
+
+\textbf{Déterminons maintenant \emph{toutes} les solutions}, avec $v=\frac16$ (la valeur est unique).
+
+\emph{Joueur 1.} En utilisant $x_1+x_2=1-x_3$, la contrainte de la colonne 2 donne
+\[
+-\tfrac12(1-x_3)+\tfrac16x_3\ge\tfrac16\iff\tfrac23x_3\ge\tfrac23\iff x_3=1.
+\]
+Donc $x=(0,0,1)$ est l'\textbf{unique} stratégie optimale du joueur 1. (La contrainte de la colonne 1, $\frac{x_1}{12}\ge0$, est alors satisfaite.)
+
+\emph{Joueur 2.} Posons $y=(t,1-t)$, $t\in[0,1]$ :
+\[
+\begin{cases}
+L_1:\ \frac t4-\frac{1-t}{2}\le\frac16\iff\frac{3t}{4}\le\frac23\iff t\le\frac89,\\[1mm]
+L_2:\ \frac t6-\frac{1-t}{2}\le\frac16\iff\frac{2t}{3}\le\frac23\iff t\le1,\\[1mm]
+L_3:\ \frac t6+\frac{1-t}{6}=\frac16\le\frac16\quad\text{toujours vrai.}
+\end{cases}
+\]
+\[
+\boxed{x^*=(0,0,1),\qquad y^*=(t,1-t)\ \text{ pour tout } t\in\Big[0,\frac89\Big],\qquad v=\frac16.}
+\]
+
+\subsection*{6. Unicité ? Conclusion}
+\textbf{Non, la solution n'est pas unique.} Le joueur 1 a une unique stratégie optimale, mais le joueur 2 en a une infinité : tout le segment $\{(t,1-t):0\le t\le\frac89\}$. Par exemple $y=(\frac12,\frac12)$ est optimale : $Ay=(-\frac18,-\frac16,\frac16)^T\le\frac16$.
+
+\begin{rembox}{Conclusion}
+\begin{itemize}[leftmargin=*]
+\item La valeur $v=\frac16$ est unique (Théorème d'existence 1), les stratégies optimales ne le sont pas nécessairement.
+\item L'élimination de $C_1$, \emph{faiblement} dominée, a supprimé toutes les solutions avec $t>0$ : il ne restait que $y=(0,1)$. C'est exactement la propriété 4 du cours (p.~19) : « en supprimant les stratégies dominées, on peut supprimer des équilibres, mais on ne supprime pas l'existence d'un équilibre ».
+\item L'ensemble des solutions optimales est convexe (ici, un point $\times$ un segment). Pour obtenir \emph{toutes} les solutions, il faut travailler sur le jeu initial, comme ci-dessus.
+\end{itemize}
+\end{rembox}
+
+%=====================================================================
+\section*{Exercice 2}
+\subsection*{Partie 1 : Définitions et propriétés}
+$J=\langle X_1,X_2,f_1,f_2\rangle$.
+
+\paragraph{1. Meilleure réponse.} Pour $x_2\in X_2$, la meilleure réponse du joueur 1 est l'ensemble
+\[
+R_1(x_2)=\Big\{x_1^*\in X_1\ :\ f_1(x_1^*,x_2)\ge f_1(x_1,x_2),\ \forall x_1\in X_1\Big\}=\arg\max_{x_1\in X_1}f_1(x_1,x_2),
+\]
+et de même $R_2(x_1)=\arg\max_{x_2\in X_2}f_2(x_1,x_2)$. En général $R_i$ est une \emph{correspondance} (multi-valuée, éventuellement vide).
+
+\paragraph{2. L'équilibre de Nash est un point fixe de $R$.} On pose $R(x)=\big(R_1(x_2),R_2(x_1)\big)$ (l'énoncé écrit $R_1(x_1)$ en deuxième composante, il s'agit de $R_2(x_1)$). Alors
+\[
+x^*=(x_1^*,x_2^*)\text{ est un équilibre de Nash}\iff x^*\in R(x^*),
+\]
+c'est-à-dire que $x^*$ est un \textbf{point fixe} de la correspondance $R$. En effet, $x_1^*\in R_1(x_2^*)$ s'écrit $f_1(x_1,x_2^*)\le f_1(x_1^*,x_2^*)$ pour tout $x_1$, ce qui est la condition de Nash pour le joueur 1 ; de même pour le joueur 2. (C'est l'idée de la preuve du théorème de Nash, par un théorème de point fixe.)
+
+\paragraph{3. Équilibre $=$ intersection des meilleures réponses.} Notons les graphes
+\[
+G_1=\{(x_1,x_2)\in X: x_1\in R_1(x_2)\},\qquad G_2=\{(x_1,x_2)\in X: x_2\in R_2(x_1)\}.
+\]
+Par définition, $x^*$ est un équilibre de Nash si et seulement si
+\[
+\underbrace{\forall x_1,\ f_1(x_1,x_2^*)\le f_1(x_1^*,x_2^*)}_{\iff x_1^*\in R_1(x_2^*)\iff x^*\in G_1}\quad\text{et}\quad\underbrace{\forall x_2,\ f_2(x_1^*,x_2)\le f_2(x_1^*,x_2^*)}_{\iff x_2^*\in R_2(x_1^*)\iff x^*\in G_2}.
+\]
+Donc
+\[
+\boxed{\mathcal{E}_{Nash}=G_1\cap G_2.}
+\]
+
+\paragraph{4. Stratégie strictement dominante.} $x_i^*\in X_i$ est strictement dominante pour le joueur $i$ si elle est strictement meilleure que toute autre stratégie, quoi que fassent les autres :
+\[
+\forall x_i\in X_i\setminus\{x_i^*\},\ \forall x_{I-i}\in X_{I-i}:\qquad f_i(x_i^*,x_{I-i})>f_i(x_i,x_{I-i}).
+\]
+Équivalent : $R_i(x_{I-i})=\{x_i^*\}$ pour tout $x_{I-i}$ (meilleure réponse unique et constante).
+
+\subsection*{Partie 2 : $f_1=x_1x_2-x_1^2x_2^2$, $f_2=x_1+x_2-(x_1^2+x_2^2)$, $X_1=X_2=\mathbb{R}$}
+
+\paragraph{1. Meilleures réponses.}
+\textbf{Joueur 1.} À $x_2$ fixé, $\varphi(x_1)=x_2\,x_1-x_2^2\,x_1^2$.
+\begin{itemize}
+\item Si $x_2=0$ : $\varphi\equiv0$, toute stratégie est optimale : $R_1(0)=\mathbb{R}$.
+\item Si $x_2\ne0$ : $\varphi''(x_1)=-2x_2^2<0$, $\varphi$ est strictement concave ; $\varphi'(x_1)=x_2-2x_2^2x_1=0\iff x_1=\frac{1}{2x_2}$. Donc $R_1(x_2)=\big\{\frac1{2x_2}\big\}$.
+\end{itemize}
+\textbf{Joueur 2.} $f_2(x_1,x_2)=(x_2-x_2^2)+(x_1-x_1^2)$ : le second terme ne dépend pas de $x_2$. $\psi(x_2)=x_2-x_2^2$ est strictement concave, $\psi'(x_2)=1-2x_2=0\iff x_2=\frac12$. Donc $R_2(x_1)=\big\{\frac12\big\}$ pour tout $x_1$.
+\[
+\boxed{R_1(x_2)=\begin{cases}\mathbb{R} & \text{si } x_2=0\\ \left\{\dfrac{1}{2x_2}\right\} & \text{si } x_2\neq0\end{cases},\qquad R_2(x_1)=\Big\{\frac12\Big\}\ \ \forall x_1\in\mathbb{R}.}
+\]
+
+\paragraph{2. Équilibres de Nash.} Par la partie 1, $\mathcal{E}=G_1\cap G_2$ : il faut $x_2^*\in R_2(x_1^*)$, donc $x_2^*=\frac12\ne0$, puis $x_1^*\in R_1(\frac12)=\{\frac{1}{2\cdot1/2}\}=\{1\}$.
+\[
+\boxed{\text{Unique équilibre de Nash : } (x_1^*,x_2^*)=\Big(1,\frac12\Big),\qquad f_1^*=\frac12-\frac14=\frac14,\quad f_2^*=\frac32-\frac54=\frac14.}
+\]
+\textbf{Vérification :} $f_1(x_1,\frac12)=\frac{x_1}{2}-\frac{x_1^2}{4}=\frac14-\frac{(x_1-1)^2}{4}\le\frac14$ et $f_2(1,x_2)=\frac14-(x_2-\frac12)^2\le\frac14$. \checkmark
+
+\paragraph{3. Stratégies strictement dominantes ?}
+\textbf{Joueur 2 : oui, $x_2^*=\frac12$.} Pour tout $x_1$ et tout $x_2\ne\frac12$ :
+\[
+f_2\big(x_1,\tfrac12\big)-f_2(x_1,x_2)=\big(\tfrac12-\tfrac14\big)-(x_2-x_2^2)=x_2^2-x_2+\tfrac14=\big(x_2-\tfrac12\big)^2>0.
+\]
+\textbf{Joueur 1 : non.} Une stratégie strictement dominante devrait être l'unique meilleure réponse à toute $x_2$. Or $R_1(1)=\{\frac12\}$ et $R_1(\frac12)=\{1\}$ sont différents ; de plus $R_1(0)=\mathbb{R}$ (contre $x_2=0$, toutes les stratégies donnent $0$, aucune n'est strictement meilleure).
+\[
+\boxed{\text{J2 : } x_2^*=\tfrac12 \text{ strictement dominante ; J1 : aucune stratégie strictement dominante.}}
+\]
+\begin{rembox}{Remarque}
+On retrouve l'équilibre par élimination : J2 joue sa stratégie strictement dominante $\frac12$, et J1 y répond par $R_1(\frac12)=1$.
+\end{rembox}
+
+\vspace{0.4cm}
+\begin{verifbox}
+Recontrôlé dans \texttt{verification\_TDJ.py} : dominations (larges, strictes, mixte $\frac12L_1+\frac12L_3=(\frac5{24},-\frac16)$), point selle unique $(3,2)$ avec $v=\frac16$ ; balayage exact (fractions) prouvant que $y=(t,1-t)$ est optimale si et seulement si $t\le\frac89$ et que $x=(0,0,1)$ est l'unique optimale du joueur 1 ; valeur confirmée par programmation linéaire. Partie 2 : meilleures réponses, équilibre $(1,\frac12)$, gains $(\frac14,\frac14)$ et identité $f_2(x_1,\frac12)-f_2(x_1,x_2)=(x_2-\frac12)^2$ par calcul symbolique.
+\end{verifbox}
+
+\end{document}

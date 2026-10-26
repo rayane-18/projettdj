@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projet 8 — Jeux de Coordination & Bataille des Sexes</title>
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #0284c7;
+            --accent: #dc2626;
+            --success: #16a34a;
+            --warning: #d97706;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 24px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-size: 26px;
+            margin-bottom: 8px;
+        }
+
+        header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .badge-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+            flex-wrap: wrap;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 850px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 22px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .card h2 {
+            font-size: 18px;
+            margin-bottom: 16px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 8px;
+        }
+
+        /* Matrix Table */
+        .matrix-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        .matrix-table th, .matrix-table td {
+            border: 2px solid var(--border);
+            padding: 12px;
+        }
+
+        .matrix-table th {
+            background-color: #f1f5f9;
+            color: var(--text-muted);
+            font-size: 13px;
+        }
+
+        .matrix-cell {
+            background-color: #fdfdfd;
+            transition: all 0.2s;
+        }
+
+        .matrix-cell.nash {
+            background-color: #dcfce7;
+            border-color: #86efac !important;
+            font-weight: bold;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 14px;
+            align-items: center;
+        }
+
+        .input-group label {
+            font-size: 13px;
+            font-weight: 600;
+            width: 130px;
+        }
+
+        .input-group input {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            width: 90px;
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary);
+        }
+
+        .results-box {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 14px;
+            border-left: 4px solid var(--secondary);
+            margin-top: 14px;
+            font-size: 14px;
+        }
+
+        .results-box p {
+            margin-bottom: 6px;
+        }
+
+        .highlight {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .stat-card {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-card .val {
+            font-size: 20px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .stat-card .lbl {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        /* SVG Container */
+        .plot-container {
+            width: 100%;
+            height: 340px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fafafa;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            overflow: hidden;
+            margin-top: 12px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-muted);
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        table.styled-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        table.styled-table th, table.styled-table td {
+            padding: 9px 12px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        table.styled-table th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        table.styled-table tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .pill-success { background: #dcfce7; color: #15803d; }
+        .pill-danger { background: #fee2e2; color: #b91c1c; }
+        .pill-info { background: #e0f2fe; color: #0369a1; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>Projet 8 — Jeux de Coordination (Bataille des Sexes)</h1>
+        <p>Master Recherche Opérationnelle (RO) — Université Akli Mohand Oulhadj - Bouira | Module : Théorie des Jeux</p>
+        <div class="badge-bar">
+            <span class="badge">Équilibres Multiples</span>
+            <span class="badge">Sélection d'Équilibre</span>
+            <span class="badge">Points Focaux (Schelling)</span>
+            <span class="badge">Équilibre Corrélé (Aumann)</span>
+            <span class="badge">Issue CKR (Gerville-Réache)</span>
+        </div>
+    </header>
+
+    <!-- Top Grid: Interactive Matrix & Equilibria -->
+    <div class="grid-2">
+        <!-- Matrix Inputs -->
+        <div class="card">
+            <h2>Paramétrage du Jeu (P &gt; Q &gt; N)</h2>
+            <div class="input-group">
+                <label for="valP">Gain préféré (P) :</label>
+                <input type="number" id="valP" value="2" step="0.5" onchange="updateAll()">
+                <span style="font-size:12px; color:var(--text-muted);">Activité préférée coordonnée</span>
+            </div>
+            <div class="input-group">
+                <label for="valQ">Gain secondaire (Q) :</label>
+                <input type="number" id="valQ" value="1" step="0.5" onchange="updateAll()">
+                <span style="font-size:12px; color:var(--text-muted);">Autre activité coordonnée</span>
+            </div>
+            <div class="input-group">
+                <label for="valN">Gain désaccord (N) :</label>
+                <input type="number" id="valN" value="0" step="0.5" onchange="updateAll()">
+                <span style="font-size:12px; color:var(--text-muted);">Miscoordination (solitaire)</span>
+            </div>
+
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">Joueur 1 (Mari)</th>
+                        <th colspan="2">Joueur 2 (Femme)</th>
+                    </tr>
+                    <tr>
+                        <th>Opéra (O)</th>
+                        <th>Football (F)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>Opéra (O)</th>
+                        <td class="matrix-cell nash" id="cell-OO">
+                            <span class="highlight">(<span id="p-OO-1">2</span>, <span id="p-OO-2">1</span>)</span><br>
+                            <small class="pill pill-success">Nash Pur 1</small>
+                        </td>
+                        <td class="matrix-cell" id="cell-OF">
+                            (<span id="p-OF-1">0</span>, <span id="p-OF-2">0</span>)<br>
+                            <small style="color:var(--text-muted);">Désaccord</small>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Football (F)</th>
+                        <td class="matrix-cell" id="cell-FO">
+                            (<span id="p-FO-1">0</span>, <span id="p-FO-2">0</span>)<br>
+                            <small style="color:var(--text-muted);">Désaccord</small>
+                        </td>
+                        <td class="matrix-cell nash" id="cell-FF">
+                            <span class="highlight">(<span id="p-FF-1">1</span>, <span id="p-FF-2">2</span>)</span><br>
+                            <small class="pill pill-success">Nash Pur 2</small>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="results-box">
+                <p><strong>Condition d'indifférence mixte :</strong></p>
+                <p>J1 indifférent si $q^* = \frac{Q - N}{P + Q - 2N} = $ <span id="txt-qstar" class="highlight">1/3 (33.3%)</span></p>
+                <p>J2 indifférent si $p^* = \frac{P - N}{P + Q - 2N} = $ <span id="txt-pstar" class="highlight">2/3 (66.7%)</span></p>
+                <p>Gain espéré mixte : $u_1^* = u_2^* = \frac{PQ - N^2}{P + Q - 2N} = $ <span id="txt-umix" class="highlight">2/3 (0.667)</span></p>
+            </div>
+        </div>
+
+        <!-- Best-Response Correspondence Plot -->
+        <div class="card">
+            <h2>Courbes de Meilleure Réponse (Intersection)</h2>
+            <div class="plot-container">
+                <svg id="svg-br" width="100%" height="100%" viewBox="0 0 450 320"></svg>
+            </div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="val" id="stat-miscoord">55.6%</div>
+                    <div class="lbl">Échec coordination (Mixte)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="val" id="stat-poa">2.25</div>
+                    <div class="lbl">Prix Anarchie (PoA)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="val" id="stat-sec">0.67</div>
+                    <div class="lbl">Niveau de Sécurité</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Comparative Table of Solutions -->
+    <div class="card" style="margin-bottom:24px;">
+        <h2>Comparaison Exhaustive des Concepts de Solution</h2>
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Concept de Solution</th>
+                    <th>Stratégies Joueur 1 &amp; 2</th>
+                    <th>Gain J1</th>
+                    <th>Gain J2</th>
+                    <th>Bien-Être Total</th>
+                    <th>Succès Coord.</th>
+                    <th>Propriété Clé</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Équilibre Pur 1</strong></td>
+                    <td>(Opéra, Opéra)</td>
+                    <td id="t-p1-g1">2.00</td>
+                    <td id="t-p1-g2">1.00</td>
+                    <td id="t-p1-tot">3.00</td>
+                    <td><span class="pill pill-success">100%</span></td>
+                    <td>Pareto-optimal, favorise J1</td>
+                </tr>
+                <tr>
+                    <td><strong>Équilibre Pur 2</strong></td>
+                    <td>(Football, Football)</td>
+                    <td id="t-p2-g1">1.00</td>
+                    <td id="t-p2-g2">2.00</td>
+                    <td id="t-p2-tot">3.00</td>
+                    <td><span class="pill pill-success">100%</span></td>
+                    <td>Pareto-optimal, favorise J2</td>
+                </tr>
+                <tr style="background:#fff1f2;">
+                    <td><strong>Équilibre Mixte de Nash</strong></td>
+                    <td>$p^* = 2/3$, $q^* = 1/3$</td>
+                    <td id="t-m-g1" style="color:red; font-weight:bold;">0.67</td>
+                    <td id="t-m-g2" style="color:red; font-weight:bold;">0.67</td>
+                    <td id="t-m-tot">1.33</td>
+                    <td><span class="pill pill-danger">44.4%</span></td>
+                    <td><strong>Sous-optimal</strong> : inférieur à Q=1 !</td>
+                </tr>
+                <tr>
+                    <td><strong>Stratégie de Sécurité (Maximin)</strong></td>
+                    <td>$p_{sec}=1/3$, $q_{sec}=2/3$</td>
+                    <td id="t-s-g1">0.67</td>
+                    <td id="t-s-g2">0.67</td>
+                    <td id="t-s-tot">1.33</td>
+                    <td><span class="pill pill-danger">44.4%</span></td>
+                    <td>Garantit $v=2/3$ sans confiance en l'autre</td>
+                </tr>
+                <tr>
+                    <td><strong>Issue Symétrique CKR (HAL 2017)</strong></td>
+                    <td>$p=0.5$ (équiprobabilité préférée)</td>
+                    <td id="t-c-g1">0.75</td>
+                    <td id="t-c-g2">0.75</td>
+                    <td id="t-c-tot">1.50</td>
+                    <td><span class="pill pill-info">50.0%</span></td>
+                    <td>Maximise le gain symétrique $\max 3p(1-p)$</td>
+                </tr>
+                <tr style="background:#f0fdf4;">
+                    <td><strong>Équilibre Corrélé (Aumann 1974)</strong></td>
+                    <td>Pile ou Face public (50% OO, 50% FF)</td>
+                    <td id="t-ce-g1" style="color:green; font-weight:bold;">1.50</td>
+                    <td id="t-ce-g2" style="color:green; font-weight:bold;">1.50</td>
+                    <td id="t-ce-tot">3.00</td>
+                    <td><span class="pill pill-success">100%</span></td>
+                    <td><strong>Pareto-dominant &amp; Équitable</strong></td>
+                </tr>
+                <tr style="background:#f0fdf4;">
+                    <td><strong>Alternance Répétée (Folk Theorem)</strong></td>
+                    <td>Jour pair : Opéra ; Jour impair : Foot</td>
+                    <td>1.50</td>
+                    <td>1.50</td>
+                    <td>3.00</td>
+                    <td><span class="pill pill-success">100%</span></td>
+                    <td>Convention temporelle sans signal externe</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Live Monte Carlo Simulator -->
+    <div class="card">
+        <h2>Simulateur Monte-Carlo en Temps Réel</h2>
+        <div style="display:flex; gap:16px; align-items:center; margin-bottom:14px; flex-wrap:wrap;">
+            <div>
+                <label style="font-size:13px; font-weight:600;">Nombre d'itérations :</label>
+                <select id="simRuns" style="padding:6px 12px; border-radius:6px; border:1px solid var(--border);">
+                    <option value="1000">1 000 parties</option>
+                    <option value="10000" selected>10 000 parties</option>
+                    <option value="50000">50 000 parties</option>
+                </select>
+            </div>
+            <button class="btn" onclick="runSimulation()">Lancer la simulation empirique</button>
+        </div>
+
+        <div class="grid-2">
+            <div id="sim-bars" style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid var(--border);">
+                <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary);">Répartition empirique des issues :</h3>
+                <div style="margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;">
+                        <span>(Opéra, Opéra) [Gains P, Q] :</span>
+                        <span id="sim-pct-OO" style="font-weight:bold;">22.2%</span>
+                    </div>
+                    <div style="background:#e2e8f0; height:12px; border-radius:6px; overflow:hidden;">
+                        <div id="bar-OO" style="background:#3b82f6; width:22.2%; height:100%;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;">
+                        <span>(Football, Football) [Gains Q, P] :</span>
+                        <span id="sim-pct-FF" style="font-weight:bold;">22.2%</span>
+                    </div>
+                    <div style="background:#e2e8f0; height:12px; border-radius:6px; overflow:hidden;">
+                        <div id="bar-FF" style="background:#10b981; width:22.2%; height:100%;"></div>
+                    </div>
+                </div>
+                <div style="margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:12px;">
+                        <span>(Opéra, Football) [Désaccord N, N] :</span>
+                        <span id="sim-pct-OF" style="font-weight:bold; color:red;">44.4%</span>
+                    </div>
+                    <div style="background:#e2e8f0; height:12px; border-radius:6px; overflow:hidden;">
+                        <div id="bar-OF" style="background:#ef4444; width:44.4%; height:100%;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px;">
+                        <span>(Football, Opéra) [Désaccord N, N] :</span>
+                        <span id="sim-pct-FO" style="font-weight:bold; color:red;">11.1%</span>
+                    </div>
+                    <div style="background:#e2e8f0; height:12px; border-radius:6px; overflow:hidden;">
+                        <div id="bar-FO" style="background:#f97316; width:11.1%; height:100%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="background:#f8fafc; padding:16px; border-radius:8px; border:1px solid var(--border);">
+                <h3 style="font-size:14px; margin-bottom:12px; color:var(--primary);">Bilan empirique observé :</h3>
+                <p style="font-size:13px; margin-bottom:8px;">Taux de coordination réussie : <span id="sim-coord-rate" class="highlight" style="color:red;">44.4%</span></p>
+                <p style="font-size:13px; margin-bottom:8px;">Gain moyen observé Joueur 1 : <span id="sim-mean-g1" class="highlight">0.667</span></p>
+                <p style="font-size:13px; margin-bottom:8px;">Gain moyen observé Joueur 2 : <span id="sim-mean-g2" class="highlight">0.667</span></p>
+                <p style="font-size:13px; margin-bottom:8px;">Perte par rapport au corrélé : <span id="sim-loss" class="highlight" style="color:red;">-55.6%</span></p>
+                <div style="background:#fee2e2; border-left:3px solid #ef4444; padding:8px; border-radius:4px; font-size:12px; color:#991b1b; margin-top:8px;">
+                    <strong>Constat fondamental :</strong> Le mélange stochastique indépendant détruit plus de la moitié de l'efficacité potentielle en raison de l'impossibilité de synchroniser les actions sans signal focal.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateAll() {
+        const P = parseFloat(document.getElementById('valP').value) || 2;
+        const Q = parseFloat(document.getElementById('valQ').value) || 1;
+        const N = parseFloat(document.getElementById('valN').value) || 0;
+
+        // Update Matrix labels
+        document.getElementById('p-OO-1').textContent = P;
+        document.getElementById('p-OO-2').textContent = Q;
+        document.getElementById('p-OF-1').textContent = N;
+        document.getElementById('p-OF-2').textContent = N;
+        document.getElementById('p-FO-1').textContent = N;
+        document.getElementById('p-FO-2').textContent = N;
+        document.getElementById('p-FF-1').textContent = Q;
+        document.getElementById('p-FF-2').textContent = P;
+
+        // Mixed Equilibrium
+        const denom = (P + Q - 2 * N);
+        const pStar = (P - N) / denom;
+        const qStar = (Q - N) / denom;
+        const uMix = (P * Q - N * N) / denom;
+
+        document.getElementById('txt-pstar').textContent = `${pStar.toFixed(3)} (${(pStar*100).toFixed(1)}%)`;
+        document.getElementById('txt-qstar').textContent = `${qStar.toFixed(3)} (${(qStar*100).toFixed(1)}%)`;
+        document.getElementById('txt-umix').textContent = `${uMix.toFixed(3)}`;
+
+        // Coordination and efficiency
+        const pCoord = pStar * qStar + (1 - pStar) * (1 - qStar);
+        const pMiscoord = 1 - pCoord;
+        const poa = (P + Q) / (2 * uMix);
+        const secVal = uMix;
+
+        document.getElementById('stat-miscoord').textContent = `${(pMiscoord*100).toFixed(1)}%`;
+        document.getElementById('stat-poa').textContent = poa.toFixed(2);
+        document.getElementById('stat-sec').textContent = secVal.toFixed(2);
+
+        // Comparative Table
+        document.getElementById('t-p1-g1').textContent = P.toFixed(2);
+        document.getElementById('t-p1-g2').textContent = Q.toFixed(2);
+        document.getElementById('t-p1-tot').textContent = (P + Q).toFixed(2);
+
+        document.getElementById('t-p2-g1').textContent = Q.toFixed(2);
+        document.getElementById('t-p2-g2').textContent = P.toFixed(2);
+        document.getElementById('t-p2-tot').textContent = (P + Q).toFixed(2);
+
+        document.getElementById('t-m-g1').textContent = uMix.toFixed(2);
+        document.getElementById('t-m-g2').textContent = uMix.toFixed(2);
+        document.getElementById('t-m-tot').textContent = (2 * uMix).toFixed(2);
+
+        document.getElementById('t-s-g1').textContent = secVal.toFixed(2);
+        document.getElementById('t-s-g2').textContent = secVal.toFixed(2);
+        document.getElementById('t-s-tot').textContent = (2 * secVal).toFixed(2);
+
+        const uCkr = 0.25 * (P + Q - 2 * N) + N;
+        document.getElementById('t-c-g1').textContent = uCkr.toFixed(2);
+        document.getElementById('t-c-g2').textContent = uCkr.toFixed(2);
+        document.getElementById('t-c-tot').textContent = (2 * uCkr).toFixed(2);
+
+        const uCe = 0.5 * (P + Q);
+        document.getElementById('t-ce-g1').textContent = uCe.toFixed(2);
+        document.getElementById('t-ce-g2').textContent = uCe.toFixed(2);
+        document.getElementById('t-ce-tot').textContent = (P + Q).toFixed(2);
+
+        // Draw Best-Response SVG
+        drawSVG(pStar, qStar);
+        runSimulation();
+    }
+
+    function drawSVG(pStar, qStar) {
+        const svg = document.getElementById('svg-br');
+        const W = 450, H = 320, m = 45;
+        const pw = W - 2 * m, ph = H - 2 * m;
+
+        const tx = p => m + p * pw;
+        const ty = q => H - m - q * ph;
+
+        let html = `
+            <rect width="${W}" height="${H}" fill="#ffffff"/>
+            <rect x="${tx(0)}" y="${ty(1)}" width="${pw}" height="${ph}" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+            <!-- Grid -->
+            <line x1="${tx(0.5)}" y1="${ty(0)}" x2="${tx(0.5)}" y2="${ty(1)}" stroke="#e2e8f0" stroke-dasharray="3"/>
+            <line x1="${tx(0)}" y1="${ty(0.5)}" x2="${tx(1)}" y2="${ty(0.5)}" stroke="#e2e8f0" stroke-dasharray="3"/>
+            
+            <!-- BR1(q) (Blue) -->
+            <polyline points="${tx(0)},${ty(0)} ${tx(0)},${ty(qStar)} ${tx(1)},${ty(qStar)} ${tx(1)},${ty(1)}" fill="none" stroke="#2563eb" stroke-width="3"/>
+            <!-- BR2(p) (Red dashed) -->
+            <polyline points="${tx(0)},${ty(0)} ${tx(pStar)},${ty(0)} ${tx(pStar)},${ty(1)} ${tx(1)},${ty(1)}" fill="none" stroke="#dc2626" stroke-width="2.5" stroke-dasharray="5,4"/>
+
+            <!-- Points -->
+            <circle cx="${tx(0)}" cy="${ty(0)}" r="6" fill="#16a34a"/>
+            <text x="${tx(0)+10}" y="${ty(0)-8}" font-size="11" font-weight="bold" fill="#16a34a">E2 (Foot, Foot)</text>
+
+            <circle cx="${tx(1)}" cy="${ty(1)}" r="6" fill="#2563eb"/>
+            <text x="${tx(1)-90}" y="${ty(1)+16}" font-size="11" font-weight="bold" fill="#2563eb">E1 (Opéra, Opéra)</text>
+
+            <circle cx="${tx(pStar)}" cy="${ty(qStar)}" r="7" fill="#9333ea"/>
+            <text x="${tx(pStar)+10}" y="${ty(qStar)+5}" font-size="11" font-weight="bold" fill="#9333ea">Emix (${pStar.toFixed(2)}, ${qStar.toFixed(2)})</text>
+
+            <!-- Axis labels -->
+            <text x="${W/2}" y="${H-10}" text-anchor="middle" font-size="12" fill="#475569">Probabilité Joueur 1 (Opéra) : p</text>
+            <text x="16" y="${H/2}" text-anchor="middle" font-size="12" fill="#475569" transform="rotate(-90 16 ${H/2})">Probabilité Joueur 2 (Opéra) : q</text>
+            <text x="${tx(0)}" y="${ty(0)+18}" text-anchor="middle" font-size="10" fill="#64748b">0</text>
+            <text x="${tx(1)}" y="${ty(0)+18}" text-anchor="middle" font-size="10" fill="#64748b">1</text>
+            <text x="${tx(pStar)}" y="${ty(0)+18}" text-anchor="middle" font-size="10" font-weight="bold" fill="#9333ea">${pStar.toFixed(2)}</text>
+            <text x="${tx(0)-14}" y="${ty(0)+4}" text-anchor="middle" font-size="10" fill="#64748b">0</text>
+            <text x="${tx(0)-14}" y="${ty(1)+4}" text-anchor="middle" font-size="10" fill="#64748b">1</text>
+            <text x="${tx(0)-16}" y="${ty(qStar)+4}" text-anchor="middle" font-size="10" font-weight="bold" fill="#9333ea">${qStar.toFixed(2)}</text>
+        `;
+        svg.innerHTML = html;
+    }
+
+    function runSimulation() {
+        const P = parseFloat(document.getElementById('valP').value) || 2;
+        const Q = parseFloat(document.getElementById('valQ').value) || 1;
+        const N = parseFloat(document.getElementById('valN').value) || 0;
+        const runs = parseInt(document.getElementById('simRuns').value) || 10000;
+
+        const denom = (P + Q - 2 * N);
+        const pStar = (P - N) / denom;
+        const qStar = (Q - N) / denom;
+
+        let nOO = 0, nFF = 0, nOF = 0, nFO = 0;
+        let totG1 = 0, totG2 = 0;
+
+        for (let i = 0; i < runs; i++) {
+            const a1 = Math.random() < pStar ? 0 : 1; // 0=O, 1=F
+            const a2 = Math.random() < qStar ? 0 : 1; // 0=O, 1=F
+
+            if (a1 === 0 && a2 === 0) {
+                nOO++;
+                totG1 += P; totG2 += Q;
+            } else if (a1 === 1 && a2 === 1) {
+                nFF++;
+                totG1 += Q; totG2 += P;
+            } else if (a1 === 0 && a2 === 1) {
+                nOF++;
+                totG1 += N; totG2 += N;
+            } else {
+                nFO++;
+                totG1 += N; totG2 += N;
+            }
+        }
+
+        const pctOO = (nOO / runs) * 100;
+        const pctFF = (nFF / runs) * 100;
+        const pctOF = (nOF / runs) * 100;
+        const pctFO = (nFO / runs) * 100;
+        const coordRate = pctOO + pctFF;
+
+        document.getElementById('sim-pct-OO').textContent = `${pctOO.toFixed(1)}%`;
+        document.getElementById('bar-OO').style.width = `${pctOO}%`;
+
+        document.getElementById('sim-pct-FF').textContent = `${pctFF.toFixed(1)}%`;
+        document.getElementById('bar-FF').style.width = `${pctFF}%`;
+
+        document.getElementById('sim-pct-OF').textContent = `${pctOF.toFixed(1)}%`;
+        document.getElementById('bar-OF').style.width = `${pctOF}%`;
+
+        document.getElementById('sim-pct-FO').textContent = `${pctFO.toFixed(1)}%`;
+        document.getElementById('bar-FO').style.width = `${pctFO}%`;
+
+        document.getElementById('sim-coord-rate').textContent = `${coordRate.toFixed(1)}%`;
+        const mean1 = totG1 / runs;
+        const mean2 = totG2 / runs;
+        document.getElementById('sim-mean-g1').textContent = mean1.toFixed(3);
+        document.getElementById('sim-mean-g2').textContent = mean2.toFixed(3);
+
+        const ceGain = 0.5 * (P + Q);
+        const loss = ((ceGain - mean1) / ceGain) * 100;
+        document.getElementById('sim-loss').textContent = `-${loss.toFixed(1)}%`;
+    }
+
+    // Initial run
+    window.onload = updateAll;
+</script>
+</body>
+</html>

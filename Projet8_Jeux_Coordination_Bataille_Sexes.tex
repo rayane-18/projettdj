@@ -1,0 +1,570 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\IfFileExists{lmodern.sty}{\usepackage{lmodern}}{}
+\IfFileExists{french.ldf}{\usepackage[french]{babel}}{\usepackage[english]{babel}}
+\usepackage{amsmath,amssymb,amsfonts,amsthm}
+\usepackage{geometry}
+\geometry{top=2cm, bottom=2cm, left=2.2cm, right=2.2cm}
+\usepackage{booktabs,array,multirow}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc}
+\usepackage[colorlinks=true,linkcolor=blue!60!black,citecolor=teal!70!black,urlcolor=blue!70!black]{hyperref}
+
+% Environnements colorés conformes au Master RO Bouira
+\newtcolorbox{propbox}[1]{colback=blue!4!white,colframe=blue!75!black,fonttitle=\bfseries,title={#1},breakable,boxrule=0.8pt}
+\newtcolorbox{rembox}[1]{colback=orange!4!white,colframe=orange!80!black,fonttitle=\bfseries,title={#1},breakable,boxrule=0.8pt}
+\newtcolorbox{verifbox}{colback=green!4!white,colframe=green!45!black,fonttitle=\bfseries,title=Validation algorithmique (Python -- \texttt{projet8\_coordination.py}),breakable,boxrule=0.6pt}
+\newtcolorbox{methbox}[1]{colback=violet!4!white,colframe=violet!70!black,fonttitle=\bfseries,title={#1},breakable,boxrule=0.8pt}
+\newtcolorbox{piegebox}{colback=red!4!white,colframe=red!70!black,fonttitle=\bfseries,title={Point critique / Piège conceptuel},breakable,boxrule=0.8pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4.5pt}
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small Master 2 Mathématiques -- Théorie des Jeux}\rhead{\small Projet 8 : Jeux de Coordination \& Bataille des Sexes}\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+
+\title{\textbf{Université Akli Mohand Oulhadj -- Bouira}\\
+\large Faculté des Sciences et des Sciences Appliquées $\cdot$ Département de Mathématiques / RO\\[2mm]
+\large Master 2 Mathématiques $\cdot$ Recherche Opérationnelle (RO) -- 2025/2026\\[4mm]
+\Huge \textbf{Rapport de Projet de Théorie des Jeux}\\[3mm]
+\LARGE \textbf{Projet 8 — Jeux de coordination (La Bataille des Sexes)}\\[2mm]
+\Large \textit{Analyse des équilibres multiples, problème de sélection d'équilibre et points focaux de Schelling}}
+\author{\textbf{Étudiant :} Projet Académique Master 2 Mathématiques \quad $\cdot$ \quad \textbf{Module :} Théorie des Jeux\\
+\textbf{Documents de référence exploités :} Notes de cours MITRO206, Manuel de Théorie des Jeux (Chap. 9--15),\\
+Luce \& Raiffa (1957), Osborne \& Rubinstein (1994), Léo Gerville-Réache (HAL 2017)\\
+\textbf{Code source et vérification :} \texttt{projet8\_coordination.py} (19 tests OK) \& \texttt{dashboard\_coordination.html}}
+\date{Année universitaire 2025--2026}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+\hrule
+\vspace{0.3cm}
+
+\section*{Introduction Générale}\label{sec:intro_gen}
+\addcontentsline{toc}{section}{Introduction Générale}
+
+Dans le cadre du module de Théorie des Jeux en Master 2 Mathématiques, nous nous intéressons à l'étude des interactions stratégiques entre plusieurs décideurs. Parmi les différentes classes de jeux, les jeux de coordination occupent une place particulière car les intérêts des joueurs ne sont pas strictement opposés.
+
+Le modèle que nous avons choisi d'étudier est le jeu connu sous le nom de \textbf{« Bataille des Sexes »} (\emph{Battle of the Sexes} ou \emph{Bach or Stravinsky}). Il décrit une situation très simple : un couple doit choisir entre deux sorties possibles. L'homme préfère aller voir un match de football, tandis que la femme préfère aller à l'opéra. Cependant, le point le plus important est que les deux joueurs préfèrent passer la soirée ensemble plutôt que séparés.
+
+L'intérêt mathématique de ce jeu réside dans le fait qu'il possède plus d'un équilibre de Nash. On trouve deux équilibres en stratégies pures et un troisième en stratégies mixtes. Cette multiplicité d'équilibres soulève une question fondamentale qui constitue notre problématique : \textbf{si plusieurs équilibres sont possibles, comment les joueurs vont-ils se coordonner ? Et comment sélectionner le « bon » équilibre ?}
+
+L'objectif de notre travail sera donc de modéliser ce jeu sous forme normale, de calculer l'ensemble de ses équilibres, de comparer les gains associés, et enfin de discuter les critères de sélection d'équilibre, notamment la notion de point focal.
+
+\vspace{0.2cm}
+\textbf{Organisation du document et articulation des chapitres :}
+Pour répondre rigoureusement à cette problématique, notre étude est structurée en sept sections principales :
+\begin{itemize}[leftmargin=1.5em]
+    \item \textbf{Section~\ref{sec:modelisation} (Modélisation formelle et typologie)} : Définition bimatricielle générale $\Gamma = \langle I, (S_i), (u_i) \rangle$ et paramétrage $P > Q > N \ge 0$ (selon les notes de cours MITRO206) englobant la forme canonique $(2,1)/(1,2)/(0,0)$.
+    \item \textbf{Section~\ref{sec:equilibres} (Identification exhaustive des équilibres de Nash)} : Détermination analytique pas à pas des deux équilibres purs Pareto-optimaux mais asymétriques et de l'équilibre mixte intérieur par indifférence au support, avec représentation géométrique des correspondances de meilleure réponse dans $[0,1]^2$.
+    \item \textbf{Section~\ref{sec:comparaison} (Comparaison analytique des gains et défaillance de coordination)} : Démonstration du théorème de sous-optimalité stricte ($u_{mix}^* < Q < P$), quantification du risque d'échec ($55{,}56\%$) et calcul du Prix de l'Anarchie ($\text{PoA} = 2{,}25$).
+    \item \textbf{Section~\ref{sec:epistemique} (Critiques épistémiques et concepts alternatifs)} : Analyse des fondements du mélange sous Connaissance Commune de la Rationalité (CKR, étude de L. Gerville-Réache, HAL 2017), niveau de sécurité garanti par la stratégie Maximin, et résolution équitable par l'Équilibre Corrélé d'Aumann ($1{,}5, 1{,}5$).
+    \item \textbf{Section~\ref{sec:schelling} (Sélection d'équilibre et points focaux de Schelling)} : Étude de la saillance cognitive et culturelle (Thomas Schelling, 1960), communication préalable (\emph{cheap talk}), engagement séquentiel de Stackelberg (achat de billets irréversibles), alternance temporelle répétée, et dynamique évolutive du réplicateur montrant l'instabilité structurelle du point mixte (point-selle).
+    \item \textbf{Section~\ref{sec:applications} (Applications économiques et opérationnelles)} : Illustrations concrètes à travers les guerres de standards technologiques, les blocages budgétaires et \emph{shutdowns} gouvernementaux (Chapitre 15 du cours), et le choix d'architectures industrielles (MAC vs CAM).
+    \item \textbf{Section~\ref{sec:bilan} (Synthèse comparative et validation algorithmique)} : Validation algorithmique exacte à 100\% adossée au script Python \texttt{projet8\_coordination.py} (19 assertions vérifiées) et au tableau de bord interactif \texttt{dashboard\_coordination.html}.
+\end{itemize}
+
+\tableofcontents
+\vspace{0.4cm}
+\hrule
+\vspace{0.5cm}
+
+%=====================================================================
+\section{Modélisation Formelle et Typologie des Jeux de Coordination}\label{sec:modelisation}
+
+\subsection{Problématique des jeux de coordination}
+En théorie des jeux non coopératifs, la majorité des interactions stratégiques s'articulent autour de deux pôles : le conflit pur (jeux à somme nulle, analysés par von Neumann) et les dilemmes sociaux de passager clandestin (dilemme du prisonnier, tragédie des biens communs). Entre ces deux extrêmes émerge une classe fondamentale : les \textbf{jeux de coordination}.
+
+On distingue deux catégories majeures :
+\begin{enumerate}[label=(\roman*)]
+    \item \textbf{Coordination pure} : les joueurs ont des intérêts strictement alignés (ex. choisir le côté de circulation sur une route, ou se retrouver au même endroit). Les gains diagonaux sont identiques pour les deux agents, à l'instar de $\begin{pmatrix} (1,1) & (0,0) \\ (0,0) & (1,1) \end{pmatrix}$.
+    \item \textbf{Coordination avec conflit d'intérêts} : les joueurs ont un intérêt primordial à se coordonner, mais leurs préférences divergent quant à la convention à adopter. C'est précisément la définition de la \textbf{Bataille des Sexes}, introduite originellement par Duncan Luce et Howard Raiffa (1957).
+\end{enumerate}
+
+\subsection{Forme normale générale et paramétrique}
+Suivant le cadre formel du cours de Master RO et des notes MITRO206 (section 1.3.6), un jeu sous forme normale est un triplet $\Gamma = \langle I, (S_i)_{i\in I}, (u_i)_{i\in I} \rangle$ où :
+\begin{itemize}
+    \item $I = \{1, 2\}$ est l'ensemble des joueurs (Joueur 1 : l'époux/Charles, Joueur 2 : l'épouse/Lucie).
+    \item $S_1 = S_2 = \{A_1, A_2\}$ désignant les deux options (par exemple $A_1 = \text{Opéra / Alpinisme}$, $A_2 = \text{Football / Boxe}$).
+    \item $u_i : S_1 \times S_2 \to \mathbb{R}$ sont les fonctions de gain.
+\end{itemize}
+
+On considère la forme paramétrique générale définie par trois réels $P, Q, N$ vérifiant :
+\begin{equation}\label{eq:param}
+P > Q > N \ge 0,
+\end{equation}
+où $P$ représente le gain de l'activité préférée en cas de coordination, $Q$ le gain de l'activité secondaire en cas de coordination, et $N$ le gain nul ou résiduel en cas de désaccord.
+
+La matrice des gains s'écrit alors :
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{cc|cc}
+& & \multicolumn{2}{c}{\textbf{Joueur 2 (Épouse)}} \\
+& & Opéra ($O$) & Football ($F$) \\ \hline
+\multirow{2}{*}{\textbf{Joueur 1 (Époux)}} & Opéra ($O$) & $(P, Q)$ & $(N, N)$ \\
+& Football ($F$) & $(N, N)$ & $(Q, P)$ \\
+\end{tabular}
+\end{center}
+
+Dans la version canonique usuelle (reprise dans le cours et le calculateur MetricGate) :
+\begin{equation}\label{eq:canonique}
+P = 2, \quad Q = 1, \quad N = 0 \quad \implies \quad 
+\begin{pmatrix}
+(2, 1) & (0, 0) \\
+(0, 0) & (1, 2)
+\end{pmatrix}.
+\end{equation}
+
+%=====================================================================
+\section{Identification Exhaustive des Équilibres de Nash}\label{sec:equilibres}
+
+\subsection{Équilibres en stratégies pures}
+Rappelons la définition d'un équilibre de Nash :
+\begin{propbox}{Définition : Équilibre de Nash en stratégies pures}
+Un profil $(s_1^*, s_2^*) \in S_1 \times S_2$ est un équilibre de Nash si et seulement si aucun joueur ne peut strictement améliorer son gain par une déviation unilatérale :
+\[
+\forall s_1 \in S_1, \ u_1(s_1, s_2^*) \le u_1(s_1^*, s_2^*) \quad \text{et} \quad \forall s_2 \in S_2, \ u_2(s_1^*, s_2) \le u_2(s_1^*, s_2^*).
+\]
+Autrement dit, $s_1^* \in BR_1(s_2^*)$ et $s_2^* \in BR_2(s_1^*)$, où $BR_i$ est la correspondance de meilleure réponse du joueur $i$.
+\end{propbox}
+
+Déterminons les meilleures réponses pour chaque joueur :
+\begin{itemize}
+    \item Pour le Joueur 1 :
+    \[
+    BR_1(s_2 = O) = \arg\max \{ u_1(O, O)=P, \ u_1(F, O)=N \} = \{O\} \quad (\text{car } P > N),
+    \]
+    \[
+    BR_1(s_2 = F) = \arg\max \{ u_1(O, F)=N, \ u_1(F, F)=Q \} = \{F\} \quad (\text{car } Q > N).
+    \]
+    \item Pour le Joueur 2 :
+    \[
+    BR_2(s_1 = O) = \arg\max \{ u_2(O, O)=Q, \ u_2(O, F)=N \} = \{O\} \quad (\text{car } Q > N),
+    \]
+    \[
+    BR_2(s_1 = F) = \arg\max \{ u_2(F, O)=N, \ u_2(F, F)=P \} = \{F\} \quad (\text{car } P > N).
+    \]
+\end{itemize}
+
+Par intersection immédiate des meilleures réponses :
+\begin{propbox}{Théorème 1 : Équilibres de Nash en stratégies pures}
+Le jeu possède exactement \textbf{deux équilibres de Nash en stratégies pures} :
+\begin{enumerate}
+    \item $E_1 = (O, O)$, procurant les gains $(u_1, u_2) = (P, Q)$ (soit $(2, 1)$ en canonique).
+    \item $E_2 = (F, F)$, procurant les gains $(u_1, u_2) = (Q, P)$ (soit $(1, 2)$ en canonique).
+\end{enumerate}
+Ces deux équilibres sont \textbf{Pareto-optimaux} : aucun des deux profils ne domine l'autre au sens de Pareto, mais ils présentent une dissymétrie distributionnelle marquée en faveur de l'un ou l'autre joueur.
+\end{propbox}
+
+\subsection{Équilibre en stratégies mixtes}
+Soit $\sigma_1 = (p, 1-p)$ la stratégie mixte du Joueur 1, où $p = \mathbb{P}(s_1 = O)$, et $\sigma_2 = (q, 1-q)$ la stratégie mixte du Joueur 2, où $q = \mathbb{P}(s_2 = O)$.
+
+Les espérances de gain s'expriment par :
+\[
+u_1(p, q) = p \cdot [q P + (1-q) N] + (1-p) \cdot [q N + (1-q) Q],
+\]
+\[
+u_2(p, q) = q \cdot [p Q + (1-p) N] + (1-q) \cdot [p N + (1-p) P].
+\]
+
+\begin{methbox}{Méthode : Théorème d'indifférence au support}
+Pour qu'un joueur randomise strictement ($0 < p < 1$), il est nécessaire et suffisant que toutes les actions pures de son support lui procurent une espérance de gain strictement identique face à la stratégie mixte de son adversaire.
+\end{methbox}
+
+\textbf{1. Détermination de $q^*$ (rendant le Joueur 1 indifférent) :}
+\[
+u_1(O, q) = u_1(F, q) \iff q P + (1-q) N = q N + (1-q) Q.
+\]
+En regroupant les termes en $q$ :
+\[
+q (P - N) = (1 - q) (Q - N) \iff q (P + Q - 2N) = Q - N.
+\]
+Puisque $P > Q > N$, le dénominateur $P + Q - 2N > 0$. D'où :
+\begin{equation}\label{eq:qstar}
+\boxed{q^* = \frac{Q - N}{P + Q - 2N}}.
+\end{equation}
+Pour le jeu canonique ($P=2, Q=1, N=0$) :
+\[
+q^* = \frac{1 - 0}{2 + 1 - 0} = \frac{1}{3}.
+\]
+
+\textbf{2. Détermination de $p^*$ (rendant le Joueur 2 indifférent) :}
+\[
+u_2(p, O) = u_2(p, F) \iff p Q + (1-p) N = p N + (1-p) P.
+\]
+De même :
+\[
+p (Q - N) = (1 - p) (P - N) \iff p (P + Q - 2N) = P - N.
+\]
+D'où :
+\begin{equation}\label{eq:pstar}
+\boxed{p^* = \frac{P - N}{P + Q - 2N}}.
+\end{equation}
+Pour le jeu canonique :
+\[
+p^* = \frac{2 - 0}{2 + 1 - 0} = \frac{2}{3}.
+\]
+
+\begin{propbox}{Théorème 2 : Équilibre de Nash en stratégies mixtes}
+Le jeu admet un \textbf{unique équilibre de Nash en stratégies mixtes intérieur} :
+\[
+\sigma^* = (p^*, q^*) = \left( \frac{P - N}{P + Q - 2N}, \ \frac{Q - N}{P + Q - 2N} \right).
+\]
+Dans le cas canonique : $\sigma^* = \left( \frac{2}{3}, \ \frac{1}{3} \right)$.
+\end{propbox}
+
+\begin{piegebox}
+\textbf{La propriété contre-intuitive des stratégies mixtes :}
+Notons que $p^*$ (probabilité que J1 joue son activité préférée $O$) dépend de la préférence de J2, tandis que $q^*$ (probabilité que J2 joue $O$) dépend de la préférence de J1.
+Chaque joueur randomise non pas pour maximiser sa propre satisfaction, mais \textbf{exclusivement pour calibrer l'indifférence de son partenaire} !
+\end{piegebox}
+
+\subsection{Représentation géométrique des correspondances de meilleure réponse}
+Les correspondances de meilleure réponse globale s'écrivent :
+\[
+BR_1(q) = \begin{cases} \{0\} & \text{si } q < q^*, \\ [0, 1] & \text{si } q = q^*, \\ \{1\} & \text{si } q > q^*, \end{cases}
+\qquad
+BR_2(p) = \begin{cases} \{0\} & \text{si } p < p^*, \\ [0, 1] & \text{si } p = p^*, \\ \{1\} & \text{si } p > p^*. \end{cases}
+\]
+
+\begin{center}
+\begin{tikzpicture}[scale=5.2]
+    % Axes
+    \draw[->, thick] (-0.05,0) -- (1.12,0) node[right] {$p$ (J1 : proba Opéra)};
+    \draw[->, thick] (0,-0.05) -- (0,1.12) node[above] {$q$ (J2 : proba Opéra)};
+    \draw[step=0.2, gray!20, very thin] (0,0) grid (1,1);
+    \draw[thick, black!40] (0,0) rectangle (1,1);
+
+    % Ticks
+    \node[below left] at (0,0) {$0$};
+    \node[below] at (1,0) {$1$};
+    \node[left] at (0,1) {$1$};
+    \node[below, blue!70!black] at (0.667,0) {$p^*=\frac{2}{3}$};
+    \node[left, red!70!black] at (0,0.333) {$q^*=\frac{1}{3}$};
+
+    % BR1(q) en bleu (fonction de q -> p)
+    % Si q < 1/3, p = 0 (axe vertical de (0,0) à (0, 1/3))
+    % Si q = 1/3, p in [0, 1] (segment horizontal de (0, 1/3) à (1, 1/3))
+    % Si q > 1/3, p = 1 (segment vertical de (1, 1/3) à (1, 1))
+    \draw[blue!80!black, ultra thick] (0,0) -- (0,0.333);
+    \draw[blue!80!black, ultra thick] (0,0.333) -- (1,0.333);
+    \draw[blue!80!black, ultra thick] (1,0.333) -- (1,1);
+    \node[blue!80!black, right] at (1, 0.7) {$BR_1(q)$};
+
+    % BR2(p) en rouge tireté (fonction de p -> q)
+    % Si p < 2/3, q = 0 (segment horizontal de (0,0) à (2/3, 0))
+    % Si p = 2/3, q in [0, 1] (segment vertical de (2/3, 0) à (2/3, 1))
+    % Si p > 2/3, q = 1 (segment horizontal de (2/3, 1) à (1, 1))
+    \draw[red!75!black, very thick, dashed] (0,0) -- (0.667,0);
+    \draw[red!75!black, very thick, dashed] (0.667,0) -- (0.667,1);
+    \draw[red!75!black, very thick, dashed] (0.667,1) -- (1,1);
+    \node[red!75!black, above] at (0.35, 0) {$BR_2(p)$};
+
+    % Points d'intersection (Nash)
+    \fill[green!60!black] (0,0) circle (0.025) node[above right=2pt, green!50!black, font=\small\bfseries] {$E_2 (0,0) = (F,F)$};
+    \fill[blue!70!black] (1,1) circle (0.025) node[below left=2pt, blue!70!black, font=\small\bfseries] {$E_1 (1,1) = (O,O)$};
+    \fill[violet!80!black] (0.667,0.333) circle (0.028) node[above right=2pt, violet!80!black, font=\small\bfseries] {$E_{mix} \left(\frac{2}{3}, \frac{1}{3}\right)$};
+
+    % Pointillés vers axes
+    \draw[dotted, gray] (0.667,0) -- (0.667,0.333);
+    \draw[dotted, gray] (0,0.333) -- (0.667,0.333);
+\end{tikzpicture}
+\end{center}
+
+%=====================================================================
+\section{Comparaison Analytique des Équilibres et Gains Espérés}\label{sec:comparaison}
+
+\subsection{Espérance de gain à l'équilibre mixte}
+Calculons le gain espéré de chaque joueur à l'équilibre mixte $\sigma^* = (p^*, q^*)$ :
+\[
+u_1(\sigma^*) = q^* P + (1 - q^*) N = \left( \frac{Q - N}{P + Q - 2N} \right) P + \left( \frac{P - N}{P + Q - 2N} \right) N.
+\]
+En développant le numérateur :
+\[
+(Q - N) P + (P - N) N = PQ - PN + PN - N^2 = PQ - N^2.
+\]
+De façon parfaitement symétrique pour le Joueur 2 :
+\[
+u_2(\sigma^*) = p^* Q + (1 - p^*) N = \left( \frac{P - N}{P + Q - 2N} \right) Q + \left( \frac{Q - N}{P + Q - 2N} \right) N = \frac{PQ - N^2}{P + Q - 2N}.
+\]
+\begin{propbox}{Théorème 3 : Gains espérés à l'équilibre mixte}
+Les deux joueurs obtiennent \textbf{exactement le même gain espéré} à l'équilibre mixte :
+\begin{equation}\label{eq:gain_mixte}
+\boxed{u_1^* = u_2^* = \frac{PQ - N^2}{P + Q - 2N}}.
+\end{equation}
+Dans le cas canonique ($P=2, Q=1, N=0$) :
+\[
+u_1^* = u_2^* = \frac{2 \times 1 - 0}{2 + 1 - 0} = \frac{2}{3} \approx 0{,}667.
+\]
+\end{propbox}
+
+\subsection{Le théorème de la défaillance de coordination (\emph{Coordination Failure})}
+Comparons à présent ce gain mixte $u_{mix}^*$ aux gains des équilibres purs.
+Dans les équilibres purs, les gains sont $(P, Q)$ ou $(Q, P)$. Le pire gain obtenu en cas de coordination réussie est $Q$.
+Calculons la différence $u_{mix}^* - Q$ :
+\[
+u_{mix}^* - Q = \frac{PQ - N^2}{P + Q - 2N} - Q = \frac{PQ - N^2 - Q(P + Q - 2N)}{P + Q - 2N}.
+\]
+Au numérateur :
+\[
+PQ - N^2 - PQ - Q^2 + 2QN = - (Q^2 - 2QN + N^2) = - (Q - N)^2.
+\]
+Par conséquent :
+\begin{equation}\label{eq:perte_efficacite}
+\boxed{u_{mix}^* - Q = - \frac{(Q - N)^2}{P + Q - 2N} < 0 \quad (\text{car } Q > N \text{ et } P + Q - 2N > 0)}.
+\end{equation}
+
+\begin{propbox}{Théorème 4 (Sous-optimalité stricte de l'équilibre mixte)}
+Pour tout jeu de la bataille des sexes satisfaisant $P > Q > N$, le gain espéré de l'équilibre mixte est \textbf{strictement inférieur au gain le plus faible de la coordination pure} :
+\[
+u_{mix}^* < Q < P.
+\]
+En particulier, en valeur canonique : $u_{mix}^* = \frac{2}{3} < 1 < 2$.
+\end{propbox}
+Ce résultat constitue une illustration saisissante du \textbf{coût de l'indétermination} : le mélange aléatoire indépendant détruit du surplus collectif.
+
+\subsection{Probabilité d'échec de coordination}
+Puisque les joueurs randomisent indépendamment, la distribution de probabilité conjointe sur les 4 issues est :
+\begin{itemize}
+    \item $\mathbb{P}(O, O) = p^* q^* = \frac{2}{3} \times \frac{1}{3} = \frac{2}{9} \approx 22{,}2\%$.
+    \item $\mathbb{P}(F, F) = (1 - p^*)(1 - q^*) = \frac{1}{3} \times \frac{2}{3} = \frac{2}{9} \approx 22{,}2\%$.
+    \item $\mathbb{P}(O, F) = p^* (1 - q^*) = \frac{2}{3} \times \frac{2}{3} = \frac{4}{9} \approx 44{,}4\%$.
+    \item $\mathbb{P}(F, O) = (1 - p^*) q^* = \frac{1}{3} \times \frac{1}{3} = \frac{1}{9} \approx 11{,}1\%$.
+\end{itemize}
+
+La probabilité totale de \textbf{défaut de coordination} (où les agents ne se retrouvent pas et gagnent $N=0$) est :
+\begin{equation}
+\mathbb{P}(\text{désaccord}) = \mathbb{P}(O, F) + \mathbb{P}(F, O) = \frac{4}{9} + \frac{1}{9} = \frac{5}{9} \approx 55{,}56\%.
+\end{equation}
+\textbf{Plus d'une fois sur deux}, les joueurs échouent à se coordonner !
+
+\subsection{Prix de l'Anarchie (PoA) et Prix de la Stabilité (PoS)}
+Soit $W(s) = u_1(s) + u_2(s)$ la fonction de bien-être social utilitariste.
+\begin{itemize}
+    \item Pour les équilibres purs : $W(E_1) = W(E_2) = P + Q = 3$.
+    \item Pour l'équilibre mixte : $W(E_{mix}) = u_1^* + u_2^* = \frac{4}{3} \approx 1{,}333$.
+    \item L'optimum social est $W_{opt} = P + Q = 3$.
+\end{itemize}
+On déduit immédiatement les métriques de la théorie algorithmique des jeux :
+\begin{equation}
+\text{Price of Anarchy (PoA)} = \frac{W_{opt}}{\min_{E \in \mathcal{E}} W(E)} = \frac{3}{4/3} = \frac{9}{4} = 2{,}25,
+\end{equation}
+\begin{equation}
+\text{Price of Stability (PoS)} = \frac{W_{opt}}{\max_{E \in \mathcal{E}} W(E)} = \frac{3}{3} = 1{,}00.
+\end{equation}
+Le PoA de $2{,}25$ mesure la perte sociétale majeure imputable au pire équilibre de Nash (l'équilibre mixte).
+
+%=====================================================================
+\section{Critiques Épistémiques et Concepts Alternatifs}\label{sec:epistemique}
+
+\subsection{La critique épistémique sous CKR (Léo Gerville-Réache, HAL 2017)}
+Dans son étude fondatrice sur la Bataille des Sexes sous l'hypothèse de Connaissance Commune de la Rationalité (\emph{Common Knowledge of Rationality} -- CKR), Léo Gerville-Réache soulève un paradoxe logique profond au c\oe ur du concept d'équilibre mixte :
+\begin{quote}
+\textit{« Si je suis certain que mon épouse choisira le football avec probabilité $1/3$, pourquoi mon indifférence absolue entre l'opéra et le football devrait-elle me conduire à choisir précisément le football avec une probabilité de $2/3$ ? Rationnellement indifférent, l'époux devrait choisir avec équiprobabilité ! »}
+\end{quote}
+En effet, l'équilibre de Nash mixte fait l'hypothèse d'une privation de libre arbitre : chaque joueur est contraint d'adopter la probabilité exacte requise pour rendre l'autre indifférent, alors que lui-même n'a \emph{aucune incitation stricte} à adopter cette distribution précise plutôt qu'une autre.
+
+\subsection{Stratégie de sécurité Maximin}
+Quelle est l'issue rationnelle pour un joueur prudent refusant de spéculer sur la croyance de l'autre ? C'est la \textbf{stratégie de sécurité} (Maximin) :
+\[
+\max_{p \in [0, 1]} \min_{q \in [0, 1]} u_1(p, q).
+\]
+Pour le Joueur 1 : face à $q=1$ (Opéra), son gain est $2p$ ; face à $q=0$ (Foot), son gain est $1-p$.
+Le gain minimum est $\min(2p, 1-p)$, maximisé à l'intersection $2p = 1 - p \implies p_{sec} = 1/3$.
+Le niveau de sécurité garanti est alors :
+\begin{equation}
+v_1 = 2 \times \frac{1}{3} = \frac{2}{3}.
+\end{equation}
+\begin{propbox}{Propriété remarquable (Lien Nash mixte / Sécurité)}
+Le gain espéré de l'équilibre de Nash mixte ($2/3$) est \textbf{strictement égal au niveau de sécurité garanti} ($v_1 = 2/3$).
+Autrement dit, l'équilibre mixte ne procure \textbf{aucun bénéfice} par rapport à une attitude de méfiance totale où le joueur ignore complètement la présence d'un partenaire rationnel !
+\end{propbox}
+
+\subsection{L'issue symétrique sous CKR}
+Dans un jeu symétrique sous CKR sans communication, la rationalité collective impose que les deux agents appliquent le même raisonnement et adoptent la même probabilité $p$ d'opter pour leur propre activité préférée (Joueur 1 joue Opéra avec probabilité $p$, Joueur 2 joue Foot avec probabilité $p$).
+L'espérance de gain symétrique devient :
+\[
+u(p) = p(1 - p) \cdot P + (1 - p)p \cdot Q = p(1 - p)(P + Q).
+\]
+Pour $P=2, Q=1$ : $u(p) = 3p(1 - p)$.
+Cette fonction quadratique atteint son maximum pour :
+\begin{equation}
+p_{CKR}^* = \frac{1}{2} \quad \implies \quad u(p_{CKR}^*) = 3 \times \frac{1}{2} \times \frac{1}{2} = \frac{3}{4} = 0{,}75.
+\end{equation}
+\begin{propbox}{Gain sous CKR symétrique}
+Sous CKR, l'issue symétrique rationnelle consiste en un choix équiprobable ($p=1/2$), procurant un gain espéré de $0{,}75$, \textbf{strictement supérieur} à l'équilibre de Nash mixte ($0{,}667$).
+\end{propbox}
+
+\subsection{L'Équilibre Corrélé au sens d'Aumann (1974)}
+Robert Aumann (1974) a généralisé la notion d'équilibre en introduisant un signal aléatoire public ou corrélé.
+Supposons qu'avant de se séparer, le couple dispose d'une pièce de monnaie équilibrée (signal public) :
+\begin{itemize}
+    \item Si pile : les deux vont à l'Opéra ($O, O$).
+    \item Si face : les deux vont au Football ($F, F$).
+\end{itemize}
+Chaque issue est recommandée avec probabilité $\frac{1}{2}$.
+\begin{itemize}
+    \item Gain espéré du Joueur 1 : $\frac{1}{2} \times 2 + \frac{1}{2} \times 1 = \frac{3}{2} = 1{,}5$.
+    \item Gain espéré du Joueur 2 : $\frac{1}{2} \times 1 + \frac{1}{2} \times 2 = \frac{3}{2} = 1{,}5$.
+\end{itemize}
+\textbf{Incitation à suivre la recommandation :}
+Si le Joueur 1 reçoit « Pile » (Opéra), sachant que le Joueur 2 a reçu « Pile », dévier unilatéralement vers Foot lui donnerait $N=0 \le 2$. Il n'a aucun intérêt à dévier.
+L'équilibre corrélé est donc \textbf{auto-exécutoire}, \textbf{strictement Pareto-dominant} face à l'équilibre mixte, et garantit une \textbf{équité parfaite}.
+
+%=====================================================================
+\section{Sélection d'Équilibre et Points Focaux de Schelling}\label{sec:schelling}
+
+\subsection{Le concept de point focal (Thomas Schelling, 1960)}
+Dans son ouvrage séminal \emph{The Strategy of Conflict} (1960), Thomas Schelling constate que les individus réels parviennent souvent à se coordonner sans communication avec un taux de succès spectaculaire, là où la théorie mathématique pure de Nash prédit l'indécision ou l'échec.
+
+\begin{propbox}{Définition : Point focal (Schelling Point)}
+Un \textbf{point focal} est un équilibre qui se distingue qualitativement des autres par sa \textbf{saillance psychologique, culturelle, historique ou contextuelle}. Cette saillance crée une attente mutuelle de premier ordre : chaque joueur anticipe que l'autre va le choisir parce qu'il est évident que chacun s'attend à ce que l'autre le choisisse.
+\end{propbox}
+
+\subsection{Mécanismes de sélection dans la Bataille des Sexes}
+Comment lever l'ambiguïté entre $(O,O)$ et $(F,F)$ ? La théorie des jeux identifie plusieurs leviers majeurs :
+
+\subsubsection{1. Communication préalable non contraignante (\emph{Cheap Talk})}
+Selon Crawford \& Sobel (1982) et Joseph Farrell (1987) :
+\begin{itemize}
+    \item \textbf{Communication unilatérale} : si l'un des joueurs (par exemple Lucie) a la possibilité d'envoyer un message avant l'action (« Je vais à l'opéra »), ce message n'est pas vérifiable mais il est \emph{crédible} car les deux joueurs ont intérêt à la coordination. Lucie s'attribue ainsi l'avantage du premier déclarant.
+    \item \textbf{Communication bilatérale simultanée} : si chacun crie son souhait, le conflit ressurgit et la coordination n'est garantie que par un protocole de négociation structuré.
+\end{itemize}
+
+\subsubsection{2. Engagement séquentiel et leadership de Stackelberg}
+Comme analysé dans le Chapitre 15 (« Shutdown ») du manuel de cours :
+Si Lucie achète \textbf{un billet d'opéra non remboursable} et envoie une photo de son ticket à Charles, elle transforme la structure séquentielle du jeu. Charles, placé devant le fait accompli, a le choix entre aller au football seul (gain $0$) ou la rejoindre à l'opéra (gain $1$). Sa meilleure réponse rationnelle est de capituler et d'aller à l'opéra.
+\emph{L'engagement irréversible détruit des options stratégiques mais procure un avantage décisif en éliminant l'équilibre concurrent.}
+
+\subsubsection{3. Répétition temporelle et alternance (\emph{Turn-taking})}
+Dans une relation répétée à horizon infini (superjeu), le \textbf{théorème Folk} prouve qu'une convention sociale d'alternance (« Opéra les semaines paires, Football les semaines impaires ») est un équilibre parfait en sous-jeux. 
+Cette convention reproduit exactement le gain de l'équilibre corrélé ($1{,}5$ par période) sans nécessiter de dispositif aléatoire externe !
+
+\subsection{Dynamique évolutive du réplicateur (Stabilité dynamique)}
+Considérons une population de Joueurs 1 (proportion $p$ jouant $O$) et une population de Joueurs 2 (proportion $q$ jouant $O$). Les équations de la dynamique du réplicateur s'écrivent :
+\[
+\dot{p} = p(1 - p)[u_1(O, q) - u_1(F, q)] = p(1 - p)[q(P + Q - 2N) - (Q - N)],
+\]
+\[
+\dot{q} = q(1 - q)[u_2(p, O) - u_2(p, F)] = q(1 - q)[p(P + Q - 2N) - (P - N)].
+\]
+Pour le cas canonique ($P=2, Q=1, N=0$) :
+\[
+\dot{p} = p(1 - p)(3q - 1), \qquad \dot{q} = q(1 - q)(3p - 2).
+\]
+Calculons la matrice jacobienne $J$ au point d'équilibre mixte $(p^*, q^*) = (2/3, 1/3)$ :
+\[
+J = \begin{pmatrix}
+(1 - 2p)(3q - 1) & 3p(1 - p) \\
+3q(1 - q) & (1 - 2q)(3p - 2)
+\end{pmatrix}_{(2/3, 1/3)}
+= \begin{pmatrix}
+0 & 3 \cdot \frac{2}{3} \cdot \frac{1}{3} \\
+3 \cdot \frac{1}{3} \cdot \frac{2}{3} & 0
+\end{pmatrix}
+= \begin{pmatrix}
+0 & \frac{2}{3} \\
+\frac{2}{3} & 0
+\end{pmatrix}.
+\]
+Le déterminant de la jacobienne est :
+\begin{equation}
+\det(J) = 0 - \left(\frac{2}{3}\right)^2 = - \frac{4}{9} < 0.
+\end{equation}
+Les valeurs propres sont $\lambda_{1, 2} = \pm \frac{2}{3}$.
+\begin{propbox}{Théorème 5 : Instabilité dynamique de l'équilibre mixte}
+Puisque le déterminant du Jacobien est strictement négatif, l'équilibre de Nash mixte est un \textbf{point-selle hyperbolique instable}. 
+Toute perturbation aléatoire infinitésimale éloigne le système de $(2/3, 1/3)$ et précipite la population vers l'un des deux attracteurs purs stables : soit $(O, O)$, soit $(F, F)$.
+\end{propbox}
+Ce résultat évolutif majeur confirme que dans la nature ou en économie, l'équilibre mixte ne s'observe jamais durablement : les sociétés convergent toujours spontanément vers une convention pure !
+
+%=====================================================================
+\section{Applications Réelles et Recherche Opérationnelle}\label{sec:applications}
+
+\subsection{Guerre des standards industriels}
+La bataille des sexes est le modèle canonique des guerres de normes :
+\begin{itemize}
+    \item \textbf{Format vidéo (1980)} : Sony (Betamax) vs JVC (VHS). Les deux constructeurs préféraient leur standard, mais l'incompatibilité détruisait le marché. VHS a émergé comme point focal grâce aux accords de licences avec les éditeurs.
+    \item \textbf{Haute Définition (2006)} : Blu-ray (Sony) vs HD-DVD (Toshiba). Résolu par un engagement fort de Warner Bros basculant exclusivement vers Blu-ray.
+    \item \textbf{Connectique mobile} : USB-C vs Lightning. Résolu par une intervention institutionnelle (Union Européenne) imposant un point focal réglementaire unique.
+\end{itemize}
+
+\subsection{Blocages budgétaires et « Shutdown » gouvernemental}
+Comme documenté au Chapitre 15 du manuel de cours, lors des votes du budget fédéral américain au Congrès :
+\begin{itemize}
+    \item Les Démocrates veulent allouer les fonds aux programmes sociaux.
+    \item Les Républicains veulent restreindre les dépenses.
+    \item Un échec de vote provoque le \emph{shutdown} (fermeture administrative, coût de plusieurs milliards de dollars pour le pays, correspondant à l'issue de désaccord $(0, 0)$).
+\end{itemize}
+Le camp qui l'emporte est invariablement celui qui réussit à convaincre l'autre de son intransigeance irrévocable (engagement crédible).
+
+\subsection{Problème de sélection technologique en entreprise (MAC vs CAM)}
+Dans le cours de Master RO (exercice page 33 de la forme extensive), deux filiales ou deux entreprises partenaires doivent choisir une technologie informatique commune : MAC ou CAM.
+Si elles choisissent la même architecture, les gains sont $(200, 600)$ ou $(600, 200)$ ; si elles divergent, les gains chutent à $(100, 100)$. 
+L'induction à rebours sur l'arbre séquentiel confère l'avantage absolu au premier investisseur.
+
+%=====================================================================
+\section{Synthèse Comparative et Validation Algorithmique}\label{sec:bilan}
+
+Le tableau suivant récapitule les métriques comparatives obtenues par notre solveur :
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{lcccccc}
+\toprule
+\textbf{Solution / Équilibre} & $\mathbf{s_1}$ & $\mathbf{s_2}$ & $\mathbf{u_1}$ & $\mathbf{u_2}$ & $\mathbf{W_{tot}}$ & \textbf{Taux Coord.} \\
+\midrule
+Équilibre Pur 1 ($E_1$) & $O$ & $O$ & $2{,}00$ & $1{,}00$ & $3{,}00$ & $100\%$ \\
+Équilibre Pur 2 ($E_2$) & $F$ & $F$ & $1{,}00$ & $2{,}00$ & $3{,}00$ & $100\%$ \\
+\textbf{Équilibre Mixte Nash} & $p^*=2/3$ & $q^*=1/3$ & $\mathbf{0{,}67}$ & $\mathbf{0{,}67}$ & $\mathbf{1{,}33}$ & $\mathbf{44{,}4\%}$ \\
+Stratégie de Sécurité & $p=1/3$ & $q=2/3$ & $0{,}67$ & $0{,}67$ & $1{,}33$ & $44{,}4\%$ \\
+Issue CKR symétrique & $p=1/2$ & $p=1/2$ & $0{,}75$ & $0{,}75$ & $1{,}50$ & $50{,}0\%$ \\
+\textbf{Équilibre Corrélé (Aumann)} & Signal & $50/50$ & $\mathbf{1{,}50}$ & $\mathbf{1{,}50}$ & $\mathbf{3{,}00}$ & $\mathbf{100\%}$ \\
+Alternance répétée (Folk) & Pair & Impair & $1{,}50$ & $1{,}50$ & $3{,}00$ & $100\%$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{verifbox}
+Le script Python \texttt{projet8\_coordination.py} vérifie automatiquement l'intégralité de ces résultats :
+\begin{itemize}[leftmargin=1.5em]
+    \item 19 assertions formelles validées avec un taux de réussite de $100\%$.
+    \item Résolution symbolique exacte via \texttt{sympy} prouvant $u_{mix}^* - Q = -(Q-N)^2/(P+Q-2N) < 0$.
+    \item Optimisation linéaire via \texttt{scipy.optimize.linprog} confirmant la structure de l'équilibre corrélé.
+    \item Simulations de Monte-Carlo (50\,000 itérations) confirmant le taux empirique d'échec de coordination de $55{,}6\%$.
+    \item Génération automatique de 3 diagrammes vectoriels SVG et d'un tableau de bord interactif (\texttt{dashboard\_coordination.html}).
+\end{itemize}
+\end{verifbox}
+
+%=====================================================================
+\section{Conclusion}\label{sec:conclusion}
+L'analyse de la Bataille des Sexes met en lumière les limites intrinsèques de l'équilibre de Nash comme concept prescriptif univoque. En présence d'équilibres multiples asymétriques, l'équilibre mixte indépendant apparaît comme un piège destructeur de valeur ($u_{mix} < Q$). 
+
+La résolution efficace et pérenne des problèmes de coordination exige de transcender le cadre non coopératif statique par :
+\begin{enumerate}
+    \item La création de \textbf{points focaux} explicites ou tacites (Schelling).
+    \item L'introduction de \textbf{mécanismes de corrélation} informationnelle ou temporelle (Aumann / Folk).
+    \item La crédibilité de \textbf{l'engagement séquentiel} (Stackelberg).
+\end{enumerate}
+Ces enseignements fournissent aux décideurs en Recherche Opérationnelle des clés méthodologiques fondamentales pour arbitrer les coopétitions et concevoir des normes industrielles robustes.
+
+%=====================================================================
+\begin{thebibliography}{99}
+\bibitem{luce1957} R. D. Luce, H. Raiffa, \emph{Games and Decisions: Introduction and Critical Survey}, John Wiley \& Sons, New York, 1957.
+\bibitem{schelling1960} T. C. Schelling, \emph{The Strategy of Conflict}, Harvard University Press, Cambridge, 1960.
+\bibitem{nash1951} J. F. Nash, \emph{Non-Cooperative Games}, Annals of Mathematics, Vol. 54, No. 2, pp. 286--295, 1951.
+\bibitem{aumann1974} R. J. Aumann, \emph{Subjectivity and Correlation in Randomized Strategies}, Journal of Mathematical Economics, Vol. 1, No. 1, pp. 67--96, 1974.
+\bibitem{osborne1994} M. J. Osborne, A. Rubinstein, \emph{A Course in Game Theory}, MIT Press, Cambridge, 1994.
+\bibitem{gerville2017} L. Gerville-Réache, \emph{L'issue de la Bataille des Sexes sous CKR}, Preprint HAL hal-01485446v2, Université de Bordeaux, 2017.
+\bibitem{mitro206} Cours MITRO206, \emph{Théorie des Jeux en Recherche Opérationnelle}, Notes de cours polycopiées, 2024.
+\bibitem{crawford1982} V. P. Crawford, J. Sobel, \emph{Strategic Information Transmission}, Econometrica, Vol. 50, No. 6, pp. 1431--1451, 1982.
+\end{thebibliography}
+
+\end{document}
