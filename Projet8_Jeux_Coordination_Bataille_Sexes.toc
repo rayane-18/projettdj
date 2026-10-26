@@ -19,7 +19,7 @@
 \contentsline {subsection}{\numberline {4.4}L'Équilibre Corrélé au sens d'Aumann (1974)}{9}{subsection.4.4}%
 \contentsline {section}{\numberline {5}Sélection d'Équilibre et Points Focaux de Schelling}{9}{section.5}%
 \contentsline {subsection}{\numberline {5.1}Le concept de point focal (Thomas Schelling, 1960)}{9}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Mécanismes de sélection dans la Bataille des Sexes}{9}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.2}Mécanismes de sélection dans la Bataille des Sexes}{10}{subsection.5.2}%
 \contentsline {subsubsection}{\numberline {5.2.1}1. Communication préalable non contraignante (\emph {Cheap Talk})}{10}{subsubsection.5.2.1}%
 \contentsline {subsubsection}{\numberline {5.2.2}2. Engagement séquentiel et leadership de Stackelberg}{10}{subsubsection.5.2.2}%
 \contentsline {subsubsection}{\numberline {5.2.3}3. Répétition temporelle et alternance (\emph {Turn-taking})}{10}{subsubsection.5.2.3}%

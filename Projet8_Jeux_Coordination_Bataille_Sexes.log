@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.21)  26 OCT 2026 23:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.28 (MiKTeX 25.12) (preloaded format=pdflatex 2026.10.21)  26 OCT 2026 23:32
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1034,10 +1034,6 @@ Overfull \hbox (114.57944pt too wide) in paragraph at lines 47--47
  [][] 
  []
 
-
-LaTeX Warning: Reference `sec:modelisation' on page 1 undefined on input line 6
-6.
-
 LaTeX Font Info:    External font `lmex10' loaded for size
 (Font)              <10.95> on input line 66.
 [1
@@ -1068,32 +1064,18 @@ LaTeX Font Info:    Font shape `T1/lmtt/bx/n' in size <10.95> not available
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
-
-
-LaTeX Warning: There were undefined references.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-
-Package rerunfilecheck Warning: File `Projet8_Jeux_Coordination_Bataille_Sexes.
-out' has changed.
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `Projet8_Jeux_Coordination_Bataille_
-Sexes.out':
-(rerunfilecheck)             Before: 215586013B0BF69D9E1F4C463CFF08A9;9155
-(rerunfilecheck)             After:  0D4BC14EC5EF28C644DDE0065519C1AB;9436.
+Package rerunfilecheck Info: File `Projet8_Jeux_Coordination_Bataille_Sexes.out
+' has not changed.
+(rerunfilecheck)             Checksum: 0D4BC14EC5EF28C644DDE0065519C1AB;9436.
  ) 
 Here is how much of TeX's memory you used:
- 28582 strings out of 467871
- 570524 string characters out of 5418375
- 1008870 words of memory out of 5000000
- 56910 multiletter control sequences out of 15000+600000
+ 28583 strings out of 467871
+ 570544 string characters out of 5418375
+ 1009643 words of memory out of 5000000
+ 56911 multiletter control sequences out of 15000+600000
  725914 words of font info for 102 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 116i,13n,121p,579b,1001s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 116i,13n,121p,579b,997s stack positions out of 10000i,1000n,20000p,200000b,200000s
 <C:/Users/rayan/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx10.pf
 b><C:/Users/rayan/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx12.pf
 b><C:/Users/rayan/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmbx8.pfb
@@ -1115,10 +1097,10 @@ rs/rayan/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt10.pfb><C:/Use
 rs/rayan/AppData/Local/Programs/MiKTeX/fonts/type1/public/lm/lmtt12.pfb><C:/Use
 rs/rayan/AppData/Local/Programs/MiKTeX/fonts/type1/public/amsfonts/symbols/msbm
 10.pfb>
-Output written on Projet8_Jeux_Coordination_Bataille_Sexes.pdf (13 pages, 47613
-3 bytes).
+Output written on Projet8_Jeux_Coordination_Bataille_Sexes.pdf (13 pages, 47706
+1 bytes).
 PDF statistics:
- 379 PDF objects out of 1000 (max. 8388607)
+ 384 PDF objects out of 1000 (max. 8388607)
  74 named destinations out of 1000 (max. 500000)
- 253 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 261 words of extra memory for PDF output out of 10000 (max. 10000000)
 
