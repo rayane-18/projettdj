@@ -1,32 +1,37 @@
 \babel@toc {french}{}\relax 
-\contentsline {section}{Introduction Générale}{1}{section*.1}%
-\contentsline {section}{\numberline {1}Modélisation Formelle et Typologie des Jeux de Coordination}{3}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Problématique des jeux de coordination}{3}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Forme normale générale et paramétrique}{3}{subsection.1.2}%
-\contentsline {section}{\numberline {2}Identification Exhaustive des Équilibres de Nash}{4}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Équilibres en stratégies pures}{4}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Équilibre en stratégies mixtes}{5}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Représentation géométrique des correspondances de meilleure réponse}{6}{subsection.2.3}%
-\contentsline {section}{\numberline {3}Comparaison Analytique des Équilibres et Gains Espérés}{6}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Espérance de gain à l'équilibre mixte}{6}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Le théorème de la défaillance de coordination (\emph {Coordination Failure})}{7}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Probabilité d'échec de coordination}{7}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Prix de l'Anarchie (PoA) et Prix de la Stabilité (PoS)}{8}{subsection.3.4}%
-\contentsline {section}{\numberline {4}Critiques Épistémiques et Concepts Alternatifs}{8}{section.4}%
-\contentsline {subsection}{\numberline {4.1}La critique épistémique sous CKR (Léo Gerville-Réache, HAL 2017)}{8}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Stratégie de sécurité Maximin}{8}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}L'issue symétrique sous CKR}{9}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}L'Équilibre Corrélé au sens d'Aumann (1974)}{9}{subsection.4.4}%
-\contentsline {section}{\numberline {5}Sélection d'Équilibre et Points Focaux de Schelling}{9}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Le concept de point focal (Thomas Schelling, 1960)}{9}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Mécanismes de sélection dans la Bataille des Sexes}{10}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}1. Communication préalable non contraignante (\emph {Cheap Talk})}{10}{subsubsection.5.2.1}%
-\contentsline {subsubsection}{\numberline {5.2.2}2. Engagement séquentiel et leadership de Stackelberg}{10}{subsubsection.5.2.2}%
-\contentsline {subsubsection}{\numberline {5.2.3}3. Répétition temporelle et alternance (\emph {Turn-taking})}{10}{subsubsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.3}Dynamique évolutive du réplicateur (Stabilité dynamique)}{10}{subsection.5.3}%
-\contentsline {section}{\numberline {6}Applications Réelles et Recherche Opérationnelle}{11}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Guerre des standards industriels}{11}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Blocages budgétaires et « Shutdown » gouvernemental}{11}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Problème de sélection technologique en entreprise (MAC vs CAM)}{11}{subsection.6.3}%
-\contentsline {section}{\numberline {7}Synthèse Comparative et Validation Algorithmique}{11}{section.7}%
-\contentsline {section}{\numberline {8}Conclusion}{12}{section.8}%
+\contentsline {section}{Introduction Générale}{i}{section*.1}%
+\contentsline {section}{\numberline {1}Modélisation Formelle et Typologie des Jeux de Coordination}{1}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Cadre axiomatique des jeux sous forme normale}{1}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Taxonomie des jeux bimatriciels $2 \times 2$ et spécificité de la coordination}{1}{subsection.1.2}%
+\contentsline {subsection}{\numberline {1.3}Forme matricielle paramétrique générale ($P > Q > N$)}{2}{subsection.1.3}%
+\contentsline {section}{\numberline {2}Identification Exhaustive des Équilibres de Nash}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Équilibres en stratégies pures}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Équilibre en stratégies mixtes}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Correspondances de meilleure réponse et représentation géométrique}{5}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Comparaison Analytique des Équilibres et Défaillance de Coordination}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Calcul des gains espérés respectifs}{7}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Démonstration du Théorème de Défaillance de Coordination}{8}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Quantification probabiliste du risque de désaccord}{8}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Évaluation du Prix de l'Anarchie (PoA) et du Prix de la Stabilité (PoS)}{9}{subsection.3.4}%
+\contentsline {section}{\numberline {4}Critiques Épistémiques et Concepts Alternatifs de Solution}{10}{section.4}%
+\contentsline {subsection}{\numberline {4.1}La critique épistémique sous CKR (Léo Gerville-Réache, HAL 2017)}{10}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}L'approche de sécurité : Stratégie Maximin de von Neumann}{10}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}L'issue symétrique collective sous CKR}{11}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}L'Équilibre Corrélé de Robert Aumann (1974)}{11}{subsection.4.4}%
+\contentsline {section}{\numberline {5}Sélection d'Équilibre et Points Focaux de Schelling}{13}{section.5}%
+\contentsline {subsection}{\numberline {5.1}La théorie des points focaux de Thomas Schelling (1960)}{13}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Mécanismes stratégiques et dynamiques de sélection}{13}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}1. Communication préalable non contraignante (\emph {Cheap Talk})}{13}{subsubsection.5.2.1}%
+\contentsline {subsubsection}{\numberline {5.2.2}2. Engagement irréversible et leadership de Stackelberg}{13}{subsubsection.5.2.2}%
+\contentsline {subsubsection}{\numberline {5.2.3}3. Répétition temporelle et Théorème Folk (Turn-Taking)}{14}{subsubsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.3}Dynamique évolutive du réplicateur (Stabilité locale)}{14}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Applications Réelles et Recherche Opérationnelle}{16}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Guerres de standards et normes industrielles}{16}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Négociations politiques et blocages budgétaires (\emph {Government Shutdown})}{16}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Sélection technologique d'entreprise : Le problème MAC vs CAM}{16}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Synthèse Comparative et Validation Algorithmique}{18}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Tableau synoptique comparatif de tous les concepts de solution}{18}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Architecture et validation du module Python}{18}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Le simulateur interactif : \texttt {dashboard\_coordination.html}}{19}{subsection.7.3}%
+\contentsline {section}{\numberline {8}Conclusion Générale et Perspectives}{20}{section.8}%
+\contentsline {section}{Références Bibliographiques}{21}{section*.8}%
